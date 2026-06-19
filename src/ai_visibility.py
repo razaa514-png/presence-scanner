@@ -164,9 +164,11 @@ def check_ai_visibility(intake: BusinessIntake) -> AIVisibilityResult:
             else "which operates remotely / without a fixed physical location"
         )
         p1 = (
-            f"What do you know about a {intake.ai_phrase} called "
-            f"\"{intake.business_name}\", {location_clause}? "
-            f"If you have no information about this specific business, say exactly "
+            f"What do you know about a business called \"{intake.business_name}\"? "
+            f"If there are multiple businesses with this name, focus on the most "
+            f"well-known one, but mention if the category doesn't match: it's "
+            f"described as a {intake.ai_phrase} {location_clause}. "
+            f"If you have no information about any business with this name, say exactly "
             f"'NO INFORMATION FOUND' and nothing else. "
             f"If you do have information, describe what you know in 2-3 sentences, "
             f"focusing on accuracy of services/positioning."
