@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Presence Health Check - Results for {{ intake.business_name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f0e0c;
+      --ink-soft: #3a3832;
+      --ink-muted: #7a7670;
+      --paper: #f7f5f0;
+      --paper-card: #ffffff;
+      --paper-warm: #efece5;
+      --gold: #b8965a;
+      --gold-light: #f5efe0;
+      --border: rgba(15,14,12,0.12);
+      --border-strong: rgba(15,14,12,0.2);
+      --radius: 10px;
+      --radius-lg: 12px;
+      --green: #3a7d44;
+      --red: #b8392b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-weight: 300;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.6;
+      position: relative;
+    }
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      letter-spacing: -0.01em;
+      margin-bottom: 0.4rem;
+    }
+    .meta {
+      color: var(--ink-muted);
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    .note {
+      background: var(--gold-light);
+      border: 1px solid rgba(184,150,90,0.3);
+      border-radius: var(--radius);
+      padding: 0.9rem 1.1rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .score-card {
+      background: var(--paper-card);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .score-card:hover { border-color: var(--gold); }
+    .score-card .label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 0.5rem;
+    }
+    .score-card .value {
+      font-size: 2.25rem;
+      font-family: 'DM Serif Display', serif;
+    }
+    .score-card .value.good { color: var(--green); }
+    .score-card .value.bad { color: var(--red); }
+
+    .composite {
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .composite .grade {
+      font-size: 3rem;
+      font-family: 'DM Serif Display', serif;
+      line-height: 1;
+    }
+    .composite .grade-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 0.5rem;
+    }
+
+    h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      letter-spacing: -0.01em;
+      margin: 2rem 0 0.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    h2:first-of-type { border-top: none; padding-top: 0; }
+    h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem;
+      margin: 1.25rem 0 0.5rem;
+    }
+
+    .checklist { list-style: none; margin: 0.75rem 0; }
+    .checklist li {
+      padding: 0.45rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.92rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .check-pass { color: var(--green); font-weight: 600; }
+    .check-fail { color: var(--red); font-weight: 600; }
+
+    .issue-list { margin: 0.75rem 0 1rem 0; padding-left: 0; list-style: none; }
+    .issue-list li {
+      background: var(--paper-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.92rem;
+    }
+
+    .quote {
+      background: var(--paper-warm);
+      border-left: 3px solid var(--gold);
+      padding: 0.85rem 1rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 0.9rem;
+      margin: 0.75rem 0;
+      white-space: pre-wrap;
+    }
+
+    .opportunity {
+      background: var(--gold-light);
+      border: 1px solid rgba(184,150,90,0.35);
+      border-radius: var(--radius);
+      padding: 1rem;
+      font-size: 0.9rem;
+      margin: 0.75rem 0;
+    }
+
+    .roadmap-item {
+      background: var(--paper-card);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .roadmap-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+      margin-bottom: 0.5rem;
+    }
+    .tag-critical { background: #fbe4e1; color: var(--red); }
+    .tag-high { background: var(--gold-light); color: var(--gold); }
+    .tag-medium { background: #eef1f5; color: #4a647a; }
+    .tag-opportunity { background: #e6f2ea; color: var(--green); }
+    .tag-low { background: var(--paper-warm); color: var(--ink-muted); }
+    .tag-error { background: #fbe4e1; color: var(--red); }
+    .roadmap-item p { font-size: 0.9rem; margin-top: 0.3rem; }
+    .roadmap-item strong { display: block; font-size: 0.98rem; }
+
+    .cta-section {
+      margin-top: 2.5rem;
+      background: var(--ink);
+      color: var(--paper);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      text-align: center;
+    }
+    .cta-section h2 {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+      color: var(--paper);
+    }
+    .cta-section p {
+      color: rgba(247,245,240,0.75);
+      font-size: 0.95rem;
+      margin: 0.75rem 0 1.5rem;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .btn-cta {
+      display: inline-block;
+      background: var(--gold);
+      color: #fff;
+      text-decoration: none;
+      padding: 0.9rem 2rem;
+      border-radius: 100px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.25s;
+    }
+    .btn-cta:hover {
+      background: #a07840;
+      transform: translateY(-1px);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 2rem;
+      color: var(--ink-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .back-link:hover { color: var(--ink); }
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="wrap">
+    <h1>Presence Health Check: {{ intake.business_name }}</h1>
+    <div class="meta">{{ intake.category_label }} — {{ intake.location_str }}</div>
+
+    {% if not scores.composite_complete %}
+    <div class="note">
+      {% if not scores.friction_complete %}
+        The site scan could not be completed{% if friction.error %} ({{ friction.error }}){% endif %}.
+      {% endif %}
+      {% if not scores.ai_complete %}
+        The AI visibility check could not be completed{% if ai.error %} ({{ ai.error }}){% endif %}.
+      {% endif %}
+      Scores below reflect only the portion that completed successfully.
+    </div>
+    {% endif %}
+
+    {% if scores.composite_complete %}
+    <div class="composite">
+      <div class="grade">{{ scores.composite_grade }} ({{ scores.composite_score }}/100)</div>
+      <div class="grade-label">Overall Presence Health</div>
+    </div>
+    {% endif %}
+
+    <div class="score-grid">
+      <div class="score-card">
+        <div class="label">Human Findability</div>
+        <div class="value {{ 'good' if scores.friction_score >= 70 else 'bad' }}">{{ scores.friction_score }}/100</div>
+      </div>
+      <div class="score-card">
+        <div class="label">AI Discovery</div>
+        {% if scores.ai_complete %}
+        <div class="value {{ 'good' if scores.ai_score >= 70 else 'bad' }}">{{ scores.ai_score }}/100</div>
+        {% else %}
+        <div class="value" style="font-size:1rem; color: var(--ink-muted);">Not completed</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ===================== HUMAN FINDABILITY ===================== -->
+    <h2>Human Findability</h2>
+
+    {% if friction.fetch_success %}
+    <ul class="checklist">
+      {% for check, points in scores.friction_details.items() %}
+      <li>
+        <span>{{ check.replace('_', ' ').title() }}</span>
+        <span class="{{ 'check-pass' if points == friction_weights.get(check, 0) and friction_weights.get(check, 0) > 0 else 'check-fail' }}">
+          {{ points }}/{{ friction_weights.get(check, 0) }}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+
+    {% if friction.issues %}
+    <h3>Issues Found</h3>
+    <ul class="issue-list">
+      {% for issue in friction.issues %}
+      <li>{{ issue }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p style="margin-top:0.75rem; color: var(--ink-muted);">No issues found - your site's foundational structure looks solid.</p>
+    {% endif %}
+
+    {% else %}
+    <p style="color: var(--ink-muted);">Could not scan site{% if friction.error %}: {{ friction.error }}{% endif %}</p>
+    {% endif %}
+
+    <!-- ===================== AI DISCOVERY ===================== -->
+    <h2>AI Discovery</h2>
+
+    {% if scores.ai_complete %}
+    <ul class="checklist">
+      {% for check, points in scores.ai_details.items() %}
+      <li>
+        <span>{{ check.replace('_', ' ').title() }}</span>
+        <span class="{{ 'check-pass' if points == ai_weights.get(check, 0) and ai_weights.get(check, 0) > 0 else 'check-fail' }}">
+          {{ points }}/{{ ai_weights.get(check, 0) }}
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <h3>What AI Knows About You</h3>
+    {% if ai.knows_business %}
+    <p>AI has the following information about {{ intake.business_name }}:</p>
+    <div class="quote">{{ ai.knowledge_summary }}</div>
+    {% else %}
+    <p><strong>AI has no information about {{ intake.business_name }}.</strong> When asked directly, it returned no relevant results - meaning you have no presence in the data these systems draw from.</p>
+    {% endif %}
+
+    <h3>Do You Appear in Recommendations?</h3>
+    {% if ai.appears_in_recommendations %}
+    <p><strong>Yes.</strong> When asked for {{ intake.ai_phrase }} recommendations{% if not intake.is_remote %} in {{ intake.location_str }}{% endif %}, {{ intake.business_name }} was mentioned.</p>
+    {% else %}
+    <p><strong>No.</strong> When asked "{{ intake.recommendation_question_display }}", {{ intake.business_name }} did not appear. Here's what AI suggested instead:</p>
+    <div class="quote">{{ ai.recommendation_response }}</div>
+    {% endif %}
+
+    <h3>Who AI Considers Your Competitors</h3>
+    {% if ai.niche_too_emerging %}
+    <p><strong>AI does not have an established competitive map for your specific niche ("{{ intake.clarity_check_phrase }}").</strong> When asked directly, it declined to name competitors rather than risk inventing inaccurate ones.</p>
+    <div class="opportunity">
+      <strong>This cuts both ways.</strong> On one hand, if a potential client asks AI "who are the leading providers of [your niche]?", there's currently no established list for you to be on or off of - you could be left out of comparisons entirely simply because the category isn't mapped yet. On the other hand, this is a genuine first-mover opportunity: whoever AI engines learn to associate with this niche first - through consistent content, citations, and structured data - is likely to become the default reference point as the category matures.
+    </div>
+    {% elif ai.competitors_mentioned %}
+    <ul class="issue-list">
+      {% for comp in ai.competitors_mentioned %}
+      <li>{{ comp }}</li>
+      {% endfor %}
+    </ul>
+    {% if ai.category_mismatch_flag %}
+    <div class="opportunity">
+      <strong>Flag:</strong> The competitors AI associates with your category don't overlap with the competitors you identified. This may indicate AI has an inaccurate picture of your market position - worth a closer human review.
+    </div>
+    {% endif %}
+    {% else %}
+    <p style="color: var(--ink-muted);">No competitors identified in this scan.</p>
+    {% endif %}
+
+    {% else %}
+    <p style="color: var(--ink-muted);">AI visibility check did not complete{% if ai.error %}: {{ ai.error }}{% endif %}</p>
+    {% endif %}
+
+    <!-- ===================== ROADMAP ===================== -->
+    <h2>Prioritized Action Plan</h2>
+    {% for priority, title, explanation in roadmap %}
+    <div class="roadmap-item">
+      <span class="roadmap-tag tag-{{ priority.lower() }}">{{ priority }}</span>
+      <strong>{{ title }}</strong>
+      <p>{{ explanation }}</p>
+    </div>
+    {% endfor %}
+
+    <!-- ===================== CTA ===================== -->
+    <div class="cta-section">
+      <h2>Want Help Closing These Gaps?</h2>
+      <p>
+        This report shows where things stand today. If you'd like a second set of
+        eyes on your results - or help building the fixes - let's talk.
+      </p>
+      <a href="mailto:hello@elizabethkoehler.com?subject=Presence%20Health%20Check%20follow-up%20for%20{{ intake.business_name | urlencode }}" class="btn-cta">
+        Book a Free Consultation →
+      </a>
+    </div>
+
+    <a href="/" class="back-link">← Run another scan</a>
+  </div>
+</body>
+</html>
