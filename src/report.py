@@ -55,7 +55,7 @@ def generate_teaser_report(
     if scores.composite_complete:
         lines.append(f"**Overall Grade: {scores.composite_grade} ({scores.composite_score}/100)**")
         lines.append("")
-    lines.append(f"**Human Findability** (can people use and navigate your site easily?)")
+    lines.append(f"**Search Foundations** (can people use and navigate your site easily?)")
     lines.append(f"`{_score_bar(scores.friction_score)}` {scores.friction_score}/100")
     lines.append("")
     if scores.ai_complete:
@@ -238,7 +238,7 @@ def generate_full_report(
         lines.append(f"**Overall Grade: {scores.composite_grade} ({scores.composite_score}/100)**")
         lines.append("")
 
-    lines.append(f"### Human Findability: {scores.friction_score}/100")
+    lines.append(f"### Search Foundations: {scores.friction_score}/100")
     lines.append(f"`{_score_bar(scores.friction_score)}`")
     lines.append("")
     for check, points in scores.friction_details.items():
@@ -265,10 +265,10 @@ def generate_full_report(
         lines.append(f"*Error: {ai.error}*")
         lines.append("")
 
-    # --- Detailed findings: Human Findability ---
+    # --- Detailed findings: Search Foundations ---
     lines.append("---")
     lines.append("")
-    lines.append("## Human Findability — Detailed Findings")
+    lines.append("## Search Foundations — Detailed Findings")
     lines.append("")
     if friction.fetch_success:
         lines.append(f"**Title tag:** \"{friction.title}\"")
