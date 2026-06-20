@@ -1,0 +1,86 @@
+<!--
+  Presence Health Check - Outreach Email Template
+  ================================================
+  How to use:
+  1. Run a real scan on the target business via the live tool.
+  2. Copy this whole block.
+  3. Replace every {{PLACEHOLDER}} below with real values from that scan.
+  4. Paste the result into the "Insert HTML" box in your email client.
+  5. Subject line formula: "Does AI know {{BUSINESS_NAME}} exists?"
+     or "Your site scores {{SEARCH_FOUNDATIONS_SCORE}}/100 - but AI cant find you"
+     (use the second one only if Search Foundations score is 70+, it's a stronger hook)
+
+  Placeholders to fill in:
+  {{GREETING_NAME}}            - First name or "there" if unknown
+  {{INTRO_SENTENCE}}           - 1 sentence: what you ran and why (vary slightly per send)
+  {{BUSINESS_NAME}}            - Exact business name as scanned
+  {{SEARCH_FOUNDATIONS_SCORE}} - Number only, e.g. 65
+  {{AI_DISCOVERY_SCORE}}       - Number only, e.g. 15
+  {{SF_COLOR}}                 - "#3b6d11" if score >= 70, else "#993c1d"
+  {{AI_COLOR}}                 - "#3b6d11" if score >= 70, else "#993c1d"
+  {{RECOMMENDATION_QUESTION}}  - The exact question asked, e.g. "marketing agency in Toledo, OH"
+  {{COMPETITOR_LIST}}          - AI's actual named competitors, separated by middle dots
+  {{CLOSING_OBSERVATION}}      - 1-2 sentences connecting the data to why it's worth fixing
+  {{SIGNOFF_NAME}}             - "Elizabeth" or "Elizabeth Koehler" depending on formality
+-->
+<div style="font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #2c2c2a;">
+
+  <p style="font-size: 15px; line-height: 1.6; margin: 0 0 20px;">Hi {{GREETING_NAME}},</p>
+
+  <p style="font-size: 15px; line-height: 1.6; margin: 0 0 20px;">
+    {{INTRO_SENTENCE}}
+  </p>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 20px; border: 1px solid #e3e1d8; border-radius: 8px; overflow: hidden;">
+    <tr>
+      <td style="background: #f1efe8; padding: 16px 20px;">
+        <p style="margin: 0; font-size: 13px; color: #5f5e5a; text-transform: uppercase; letter-spacing: 0.04em;">Presence Health Check</p>
+        <p style="margin: 4px 0 0; font-size: 17px; font-weight: 600;">{{BUSINESS_NAME}}</p>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding: 18px 20px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td width="50%" style="text-align: center; padding: 8px;">
+              <p style="margin: 0; font-size: 28px; font-weight: 600; color: {{SF_COLOR}};">{{SEARCH_FOUNDATIONS_SCORE}}</p>
+              <p style="margin: 2px 0 0; font-size: 12px; color: #5f5e5a;">Search Foundations</p>
+            </td>
+            <td width="50%" style="text-align: center; padding: 8px; border-left: 1px solid #e3e1d8;">
+              <p style="margin: 0; font-size: 28px; font-weight: 600; color: {{AI_COLOR}};">{{AI_DISCOVERY_SCORE}}</p>
+              <p style="margin: 2px 0 0; font-size: 12px; color: #5f5e5a;">AI Discovery</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+  <p style="font-size: 15px; line-height: 1.6; margin: 0 0 12px;">
+    The part that caught my eye: I asked AI to recommend a {{RECOMMENDATION_QUESTION}}. Here's who it named -
+  </p>
+
+  <p style="font-size: 14px; line-height: 1.7; margin: 0 0 20px; padding: 14px 18px; background: #f1efe8; border-radius: 8px;">
+    {{COMPETITOR_LIST}}
+  </p>
+
+  <p style="font-size: 15px; line-height: 1.6; margin: 0 0 24px;">
+    {{CLOSING_OBSERVATION}}
+  </p>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 28px;">
+    <tr>
+      <td align="center">
+        <a href="https://presence-scanner.onrender.com" style="display: inline-block; background: #0f0e0c; color: #ffffff; font-size: 14px; font-weight: 600; padding: 12px 28px; border-radius: 100px; text-decoration: none;">Run your own free scan</a>
+      </td>
+    </tr>
+  </table>
+
+  <p style="font-size: 15px; line-height: 1.6; margin: 0 0 20px;">
+    Happy to walk through any of this if it's useful - just reply here.
+  </p>
+
+  <p style="font-size: 15px; line-height: 1.6; margin: 0 0 4px;">{{SIGNOFF_NAME}}</p>
+  <p style="font-size: 13px; line-height: 1.6; margin: 0; color: #5f5e5a;">elizabethkoehler.com</p>
+
+</div>
